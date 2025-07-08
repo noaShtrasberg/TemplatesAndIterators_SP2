@@ -120,16 +120,16 @@ public:
     private:
         const MyContainer& container;
         size_t index;
-        std::vector<size_t> order_container;
+        std::vector<size_t> index_container;
 
     public:
         AscendingOrder(const MyContainer& c, size_t i = 0) : container(c), index(i) {
             size_t n = container.size();
-            order_container.resize(n);
+            index_container.resize(n);
             for (size_t m=0 ; m<n ; ++m)
-                order_container[m] = m;
+                index_container[m] = m;
             // Sort the new container from smallest to largest 
-            std::sort(order_container.begin(), order_container.end(),
+            std::sort(index_container.begin(), index_container.end(),
                 [&](size_t a, size_t b){ return container.items[a] < container.items[b]; });
         }
 
@@ -148,7 +148,7 @@ public:
 
         bool operator!=(const AscendingOrder& other) const {return index != other.index;}
 
-        const T& operator*() const {return container.items[order_container[index]];}
+        const T& operator*() const {return container.items[index_container[index]];}
 
         static AscendingOrder begin(const MyContainer& c) {return AscendingOrder(c, 0);}
 
@@ -160,16 +160,17 @@ public:
     private:
         const MyContainer& container;
         size_t index;
-        std::vector<size_t> order_container;
+        std::vector<size_t> index_container;
         
     public:
         DescendingOrder(const MyContainer& c, size_t i = 0) : container(c), index(i) {
             size_t n = container.size();
-            order_container.resize(n);
+            index_container.resize(n);
             for (size_t m=0 ; m<n ; ++m)
-                order_container[m] = m;
+                index_container[m] = m;
+
             // Sort the new container from largest to smallest 
-            std::sort(order_container.begin(), order_container.end(),
+            std::sort(index_container.begin(), index_container.end(),
                 [&](size_t a, size_t b){ return container.items[a] > container.items[b]; });
         }
 
@@ -188,7 +189,7 @@ public:
 
         bool operator!=(const DescendingOrder& other) const {return index != other.index;}
 
-        const T& operator*() const {return container.items[order_container[index]];}
+        const T& operator*() const {return container.items[index_container[index]];}
 
         static DescendingOrder begin(const MyContainer& c) {return DescendingOrder(c, 0);}
 
@@ -200,31 +201,33 @@ public:
     private:
         const MyContainer& container;
         size_t index;
-        std::vector<size_t> order_container;
+        std::vector<size_t> index_container;
         
     public:
         SideCrossOrder(const MyContainer& c, size_t i = 0) : container(c), index(i) {
             size_t n = container.size();
-            order_container.resize(n);
+            index_container.resize(n);
             for (size_t m = 0; m < n; ++m)
-                order_container[m] = m;
+                index_container[m] = m;
 
-            std::sort(order_container.begin(), order_container.end(),
+            // Sort the index's array from smallest to largest
+            std::sort(index_container.begin(), index_container.end(),
                       [&](size_t a, size_t b){ return container.items[a] < container.items[b]; });
 
-            // Create side-cross pattern
+            // Create the side-cross (index 0, n-1, 1, n-2, ... at the sorted index array)
             std::vector<size_t> sidecross;
             size_t left = 0, right = n - 1;
+
             bool take_left = true;
             while (left <= right) {
                 if (take_left) {
-                    sidecross.push_back(order_container[left++]);
+                    sidecross.push_back(index_container[left++]);
                 } else {
-                    sidecross.push_back(order_container[right--]);
+                    sidecross.push_back(index_container[right--]);
                 }
-                take_left = !take_left;
+                take_left = !take_left; // Changes every iteration
             }
-            order_container = std::move(sidecross);
+            index_container = std::move(sidecross); // move assignment
         }
 
         SideCrossOrder& operator++() {
@@ -242,7 +245,7 @@ public:
 
         bool operator!=(const SideCrossOrder& other) const {return index != other.index;}
 
-        const T& operator*() const {return container.items[order_container[index]];}
+        const T& operator*() const {return container.items[index_container[index]];}
 
         static SideCrossOrder begin(const MyContainer& c) {return SideCrossOrder(c, 0);}
 
@@ -254,29 +257,28 @@ public:
     private:
         const MyContainer& container;
         size_t index;
-        std::vector<size_t> order_container;
+        std::vector<size_t> index_container;
 
     public:
         MiddleOutOrder(const MyContainer& c, size_t i = 0) : container(c), index(i) {
             size_t n = container.size();
-            if (n == 0) return;
-            order_container.reserve(n);
-            size_t mid = n / 2; // round up to middle index if the number of elements is even
+            index_container.reserve(n);
+            size_t mid = n / 2; // take the up-middle index if the number of elements is even
 
-            order_container.push_back(mid);
+            index_container.push_back(mid);
 
             int left = (int)mid - 1;
             int right = (int)mid + 1;
 
             bool take_left = true;
-            while (order_container.size() < n) {
+            while (index_container.size() < n) {
                 if (take_left && left >= 0) {
-                    order_container.push_back(left--);
+                    index_container.push_back(left--);
                 }
-                else if (!take_left && (size_t)right < n) {
-                    order_container.push_back(right++);
+                else if (!take_left && (size_t)right < n) { // size_t because the n of the container
+                    index_container.push_back(right++);
                 }
-                take_left = !take_left;
+                take_left = !take_left; // Changes every iteration
             }
         }
 
@@ -295,7 +297,7 @@ public:
 
         bool operator!=(const MiddleOutOrder& other) const {return index != other.index;}
 
-        const T& operator*() const {return container.items[order_container[index]];}
+        const T& operator*() const {return container.items[index_container[index]];}
 
         static MiddleOutOrder begin(const MyContainer& c) {return MiddleOutOrder(c, 0);}
 
