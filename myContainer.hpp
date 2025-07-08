@@ -28,7 +28,7 @@ public:
         items.erase(updated_end, items.end());
          
         if (items.size() == original_size) {
-            cout << "This item is not found!" << endl;
+            std::cout << "This item is not found!" << std::endl;
         }
     }
 
@@ -46,30 +46,6 @@ public:
         os << "]";
         return os;
     }
-
-    // Begin/end for iterating in original order
-    Order regular_begin() const { return Order::begin(*this); }
-    Order regular_end() const { return Order::end(*this); }
-
-    // Begin/end for reverse iteration
-    ReverseOrder reverse_begin() const { return ReverseOrder::begin(*this); }
-    ReverseOrder reverse_end() const { return ReverseOrder::end(*this); }
-
-    // Begin/end for ascending order iteration
-    AscendingOrder ascending_begin() const { return AscendingOrder::begin(*this); }
-    AscendingOrder ascending_end() const { return AscendingOrder::end(*this); }
-
-    // Begin/end for descending order iteration
-    DescendingOrder descending_begin() const { return DescendingOrder::begin(*this); }
-    DescendingOrder descending_end() const { return DescendingOrder::end(*this); }
-
-    // Begin/end for side-cross order (min, max, min+1, max-1, ...)
-    SideCrossOrder sidecross_begin() const { return SideCrossOrder::begin(*this); }
-    SideCrossOrder sidecross_end() const { return SideCrossOrder::end(*this); }
-
-    // Begin/end for middle-out order (middle, left, right, ...)
-    MiddleOutOrder middleout_begin() const { return MiddleOutOrder::begin(*this); }
-    MiddleOutOrder middleout_end() const { return MiddleOutOrder::end(*this); }
 
 
     // ******************** Iterators ********************
@@ -285,7 +261,7 @@ public:
             size_t n = container.size();
             if (n == 0) return;
             order_container.reserve(n);
-            size_t mid = n / 2; // round down to middle index if the number of elements is even
+            size_t mid = n / 2; // round up to middle index if the number of elements is even
 
             order_container.push_back(mid);
 
@@ -325,6 +301,31 @@ public:
 
         static MiddleOutOrder end(const MyContainer& c) {return MiddleOutOrder(c, c.size());}
     };
+
+    // Begin/end for iterating in original order
+    Order regular_begin() const { return Order::begin(*this); }
+    Order regular_end() const { return Order::end(*this); }
+
+    // Begin/end for reverse iteration
+    ReverseOrder reverse_begin() const { return ReverseOrder::begin(*this); }
+    ReverseOrder reverse_end() const { return ReverseOrder::end(*this); }
+
+    // Begin/end for ascending order iteration
+    AscendingOrder ascending_begin() const { return AscendingOrder::begin(*this); }
+    AscendingOrder ascending_end() const { return AscendingOrder::end(*this); }
+
+    // Begin/end for descending order iteration
+    DescendingOrder descending_begin() const { return DescendingOrder::begin(*this); }
+    DescendingOrder descending_end() const { return DescendingOrder::end(*this); }
+
+    // Begin/end for side-cross order (min, max, min+1, max-1, ...)
+    SideCrossOrder sidecross_begin() const { return SideCrossOrder::begin(*this); }
+    SideCrossOrder sidecross_end() const { return SideCrossOrder::end(*this); }
+
+    // Begin/end for middle-out order (middle, left, right, ...)
+    MiddleOutOrder middleout_begin() const { return MiddleOutOrder::begin(*this); }
+    MiddleOutOrder middleout_end() const { return MiddleOutOrder::end(*this); }
+
 };
 
 }

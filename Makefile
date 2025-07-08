@@ -21,7 +21,7 @@ test_exe: test.o
 test: test_exe
 	./test
 
-test.o: test.cpp SquareMat.hpp doctest.hpp
+test.o: test.cpp myContainer.hpp doctest.hpp
 	$(CC) $(CFLAGS) -c test.cpp
 
 valgrind: main test_exe
